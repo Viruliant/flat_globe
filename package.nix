@@ -26,24 +26,31 @@ let
   inherit (pkgs) lib;
 
   # Pull pyproject-nix ecosystem directly.
+  # Pinned revs: fetchGit without a rev is an "unlocked" input and fails
+  # in pure evaluation mode (default for `nix build` / `nix develop`).
   pyproject-nix = import (builtins.fetchGit {
     url = "https://github.com/pyproject-nix/pyproject.nix.git";
+    rev = "ddc400a6883b042646d0940e65971bb7f7e96107";
   }) {
     inherit lib;
   };
 
   uv2nix = import (builtins.fetchGit {
     url = "https://github.com/pyproject-nix/uv2nix.git";
+    rev = "a541fda20d6784d88789cfcb221638b7c25a23dd";
   }) {
     inherit pyproject-nix lib;
   };
 
   pyproject-build-systems = import (builtins.fetchGit {
     url = "https://github.com/pyproject-nix/build-system-pkgs.git";
+    rev = "953d35d03a51dbecaf3feb3fb679eb63e90ebeb4";
   }) {
     inherit pyproject-nix uv2nix lib;
   };
-  python = pkgs.python313;
+  # python312: numpy==1.26.4 (pinned in uv.lock) only ships wheels up to
+  # cp312; on 3.13 uv2nix would have to build numpy from source.
+  python = pkgs.python312;
 
   # Load workspace Reads:
   #   pyproject.toml
