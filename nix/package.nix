@@ -111,7 +111,8 @@ pkgs.stdenv.mkDerivation {
   pname = projectName;
   version = "0.1.0";
 
-  src = ./.;
+  # Repo root (numtest.py lives there); `./..` from nix/ is the flake root.
+  src = ./..;
 
   nativeBuildInputs = [
     appPythonEnv

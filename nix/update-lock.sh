@@ -17,7 +17,7 @@ cleanup_proj_py(){
 
 compile_requirements(){
   uv pip compile \
-    requirements.bak.txt \
+    ../requirements.bak.txt \
     -o requirements.txt \
     --upgrade \
     --prerelease=allow

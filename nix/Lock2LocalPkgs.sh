@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Run from the repo root (flake.nix lives one level above this script).
+cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
 Lock2LocalPkgs (){
   rev=$(nixos-version --json | jq -r '.nixpkgsRevision')
 

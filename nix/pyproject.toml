@@ -93,7 +93,7 @@ dependencies = [
 "sympy==1.14.0",
 "terminado==0.18.1",
 "tinycss2==1.5.1",
-"tornado==6.6b1",
+"tornado==6.6rc1",
 "traitlets==5.16.1",
 "typing-extensions==4.16.0",
 "tzdata==2026.5",
