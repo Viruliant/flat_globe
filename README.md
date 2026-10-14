@@ -18,6 +18,16 @@ uv2nix. `nix build` produces `ex-reqs-shell`, a binary that runs `numtest.py`.
   those three files, so hand-edits to them are lost - `requirements.bak.txt`
   is the only editable source)
 
+## Trying both bin layouts
+
+`nix run` works on both branches (each sets `meta.mainProgram`):
+
+    git checkout master && nix run
+    # option A (master): venv at bin/ex-reqs-shell/, wrapper is bin/numtest
+
+    git checkout option-b && nix run
+    # option B: flat bin/ex-reqs-shell wrapper, venv at bin/ex-reqs-shell-venv/
+
 ## Gotchas
 
 - `package.nix` pins the pyproject-nix / uv2nix / build-system-pkgs git revs:
