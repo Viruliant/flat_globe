@@ -6,8 +6,13 @@ uv2nix. `nix build` produces `ex-reqs-shell`, a binary that runs `numtest.py`.
 ## Commands
 
 - `nix build` - build; needs network on first run (fetches pinned git deps + PyPI wheels)
-- `nix run` - build and run numtest.py
-- `nix develop` - shell containing the built package
+- `nix run` - build and run numtest.py (via `bin/numtest`, `meta.mainProgram`)
+- `nix develop` - shell where `python3` is the uv.lock venv python
+- `result/bin/ex-reqs-shell/` - the full locked venv, namespaced
+  (`ex-reqs-shell/python3`, `ex-reqs-shell/jupyter`, ...), so nothing
+  shadows the system `python3`. On NixOS,
+  `environment.systemPackages = [ pkg ]` exposes it at
+  `/run/current-system/sw/bin/ex-reqs-shell/python3`.
 - `./update-lock.sh` - regenerate `requirements.txt`, `pyproject.toml`, `uv.lock`
   from `requirements.bak.txt` (requires `uv` on PATH; **deletes and rewrites**
   those three files, so hand-edits to them are lost - `requirements.bak.txt`

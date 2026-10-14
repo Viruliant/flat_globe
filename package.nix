@@ -117,19 +117,25 @@ pkgs.stdenv.mkDerivation {
     appPythonEnv
   ];
 
+  # bin/${projectName}/ = the full locked venv, namespaced (python3,
+  # python, jupyter, ipython, ...); nothing shadows the system python3.
+  # bin/numtest = wrapper that runs numtest.py.
   installPhase = ''
-    mkdir -p $out/bin
-    # Replace numtest.py with your real entrypoint later.
-    cat > $out/bin/${projectName} <<EOF
+    mkdir -p $out/bin/${projectName}
+    for f in ${appPythonEnv}/bin/*; do
+      ln -s "$f" "$out/bin/${projectName}/"
+    done
+    cat > $out/bin/numtest <<EOF
     #!${pkgs.runtimeShell}
     exec ${appPythonEnv}/bin/python $src/numtest.py "\$@"
     EOF
-    chmod +x $out/bin/${projectName}
+    chmod +x $out/bin/numtest
   '';
 
   meta = with lib; {
     description = "Python environment generated from uv.lock using uv2nix";
     platforms = platforms.all;
+    mainProgram = "numtest";
   };
 }
 ####################################################################

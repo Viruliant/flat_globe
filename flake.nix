@@ -12,7 +12,12 @@
           pkg = pkgs.callPackage ./package.nix { };
         in {
           packages.default = pkg;
-          devShells.default = pkgs.mkShell { packages = [ pkg ]; };
+          # inputsFrom pulls pkg's nativeBuildInputs (= the uv.lock venv) into
+          # the shell so `python3` has the locked packages (e.g. numpy).
+          devShells.default = pkgs.mkShell {
+            packages = [ pkg ];
+            inputsFrom = [ pkg ];
+          };
         };
     };
 }
