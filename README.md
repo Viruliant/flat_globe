@@ -5,6 +5,28 @@ uv2nix. `nix build` produces `ex-reqs-shell`, a binary that runs `numtest.py`.
 
 ## Commands
 
+```bash
+# checkout with
+git clone 
+
+# requirements.bak.txt is the only editable source
+# regenerates requirements.txt, pyproject.toml, uv.lock from requirements.bak.txt
+./update-lock.sh
+# sets flake.lock to match system nixpkgs
+./Lock2LocalPkgs.sh
+
+# build with
+nix build
+# needs network on first run (fetches pinned git deps + PyPI wheels)
+
+# enter development environment with
+nix develop
+./result/bin/ex-reqs-shell/python3 ./numtest.py
+
+# run with # build and run numtest.py (via `meta.mainProgram`)
+nix run
+```
+
 - `nix build` - build; needs network on first run (fetches pinned git deps + PyPI wheels)
 - `nix run` - build and run numtest.py (via `bin/numtest`, `meta.mainProgram`)
 - `nix develop` - shell where `python3` is the uv.lock venv python
@@ -13,10 +35,10 @@ uv2nix. `nix build` produces `ex-reqs-shell`, a binary that runs `numtest.py`.
   shadows the system `python3`. On NixOS,
   `environment.systemPackages = [ pkg ]` exposes it at
   `/run/current-system/sw/bin/ex-reqs-shell/python3`.
-- `./update-lock.sh` - regenerate `requirements.txt`, `pyproject.toml`, `uv.lock`
-  from `requirements.bak.txt` (requires `uv` on PATH; **deletes and rewrites**
-  those three files, so hand-edits to them are lost - `requirements.bak.txt`
-  is the only editable source)
+
+
+ (requires `uv` on PATH; **deletes and rewrites**
+  those three files, so hand-edits to them are lost - 
 
 ## Trying both bin layouts
 
@@ -24,9 +46,6 @@ uv2nix. `nix build` produces `ex-reqs-shell`, a binary that runs `numtest.py`.
 
     git checkout master && nix run
     # option A (master): venv at bin/ex-reqs-shell/, wrapper is bin/numtest
-
-    git checkout option-b && nix run
-    # option B: flat bin/ex-reqs-shell wrapper, venv at bin/ex-reqs-shell-venv/
 
 ## Gotchas
 
