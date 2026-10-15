@@ -1,5 +1,5 @@
 {
-  description = "numtest Python App with Nix and uv2nix";
+  description = "flat_globe Python App with Nix and uv2nix";
   inputs = {
     nixpkgs.url = "nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";

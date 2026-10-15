@@ -440,7 +440,7 @@ wheels = [
 ]
 
 [[package]]
-name = "ex-reqs-shell"
+name = "flat_globe"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

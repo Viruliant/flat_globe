@@ -89,8 +89,8 @@ let
 
   # in pyproject.toml Must match:
   #   [project]
-  #   name = "ex-reqs-shell"
-  projectName = "ex-reqs-shell";
+  #   name = "flat_globe"
+  projectName = "flat_globe";
 
   # Build the runtime virtual environment
   # workspace.deps.default comes from pyproject.toml
@@ -107,31 +107,46 @@ in
 ####################################################################
 
 pkgs.stdenv.mkDerivation {
-#   pname = "numtest";
   pname = projectName;
   version = "0.1.0";
   src = ./.;
   nativeBuildInputs = [
     appPythonEnv
   ];
-  # bin/${projectName}/ = the full locked venv, namespaced (python3,
+  # p2j + nbconvert need a writable HOME inside the build sandbox
+  # notebook + html are build artifacts, regenerated from the single
+  # source of truth (globe_vs_flat.py):
+  #   p2j -o -t globe_vs_flat.ipynb globe_vs_flat.py
+  #   jupyter nbconvert --to html --execute globe_vs_flat.ipynb
+  # bin/flat_globe-env/ = the full locked venv, namespaced (python3,
   # python, jupyter, ipython, ...); nothing shadows the system python3.
-  # bin/numtest = wrapper that runs numtest.py.
+  # Suffixed -env so it can never collide with the flat_globe launcher.
+  # bin/flat_globe = wrapper that opens the generated report in the
+  # default browser (via xdg-open).
   installPhase = ''
-    mkdir -p $out/bin/${projectName}
+    export HOME=$TMPDIR
+
+    ${appPythonEnv}/bin/p2j -o -t globe_vs_flat.ipynb globe_vs_flat.py
+    ${appPythonEnv}/bin/jupyter-nbconvert --to html --execute globe_vs_flat.ipynb
+
+    mkdir -p $out/share/${projectName}
+    cp globe_vs_flat.html $out/share/${projectName}/globe_vs_flat.html
+
+    mkdir -p $out/bin/${projectName}-env
     for f in ${appPythonEnv}/bin/*; do
-      ln -s "$f" "$out/bin/${projectName}/"
+      ln -s "$f" "$out/bin/${projectName}-env/"
     done
-    cat > $out/bin/numtest <<EOF
+
+    cat > $out/bin/${projectName} <<EOF
     #!${pkgs.runtimeShell}
-    exec ${appPythonEnv}/bin/python $src/numtest.py "\$@"
+    exec ${pkgs.xdg-utils}/bin/xdg-open $out/share/${projectName}/globe_vs_flat.html "\$@"
     EOF
-    chmod +x $out/bin/numtest
+    chmod +x $out/bin/${projectName}
   '';
 
   meta = with lib; {
-    description = "Python environment generated from uv.lock using uv2nix";
+    description = "Globe vs flat Earth distance report, built from globe_vs_flat.py via uv2nix";
     platforms = platforms.all;
-    mainProgram = "numtest";
+    mainProgram = "flat_globe";
   };
 }

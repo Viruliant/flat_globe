@@ -1,1 +1,4 @@
 /result
+*.html
+*.ipynb
+.ipynb_checkpoints/

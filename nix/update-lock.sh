@@ -46,7 +46,7 @@ gen_toml() {
     # deps=$(sed 's/^/"/; s/$/",/' "$in_file")
     cat > "$out_file" <<EOF
 [project]
-name = "ex-reqs-shell"
+name = "flat_globe"
 version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.12"

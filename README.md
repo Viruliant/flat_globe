@@ -1,7 +1,12 @@
-# numtest
+# flat_globe
 
-Testbed for building a Python app from `requirements.bak.txt` with Nix +
-uv2nix. `nix build` produces `ex-reqs-shell`, a binary that runs `numtest.py`.
+Testbed for building a Python env from `requirements.bak.txt` with Nix +
+uv2nix.
+
+`globe_vs_flat.py` (single source of truth) is converted to a notebook with
+`p2j`, executed with `jupyter nbconvert --execute` and shipped as an HTML
+report. `nix build` produces the `flat_globe` binary, which opens the report
+in your default browser.
 
 ## Commands
 
@@ -15,26 +20,38 @@ git clone
 # sets flake.lock to match system nixpkgs
 ./nix/Lock2LocalPkgs.sh
 
-# build with
+# build with (generates the HTML report at install time)
 nix build
 # needs network on first run (fetches pinned git deps + PyPI wheels)
 
 # enter development environment with
 nix develop
-./result/bin/ex-reqs-shell/python3 ./numtest.py
+./result/bin/flat_globe-env/python3 ./numtest.py
 
-# run with # build and run numtest.py (via `meta.mainProgram`)
+# run with # opens the report in the default browser (via `meta.mainProgram`)
 nix run
 ```
 
 - `nix build` - build; needs network on first run (fetches pinned git deps + PyPI wheels)
-- `nix run` - build and run numtest.py (via `bin/numtest`, `meta.mainProgram`)
+- `nix run` - build and open the report (via `bin/flat_globe`, `meta.mainProgram`)
 - `nix develop` - shell where `python3` is the uv.lock venv python
-- `result/bin/ex-reqs-shell/` - the full locked venv, namespaced
-  (`ex-reqs-shell/python3`, `ex-reqs-shell/jupyter`, ...), so nothing
+- `result/bin/flat_globe-env/` - the full locked venv, namespaced
+  (`flat_globe-env/python3`, `flat_globe-env/jupyter`, ...), so nothing
   shadows the system `python3`. On NixOS,
   `environment.systemPackages = [ pkg ]` exposes it at
-  `/run/current-system/sw/bin/ex-reqs-shell/python3`.
+  `/run/current-system/sw/bin/flat_globe-env/python3`.
+- `result/share/flat_globe/globe_vs_flat.html` - the executed report
+
+## Build artifacts
+
+`globe_vs_flat.ipynb` and `globe_vs_flat.html` are generated during the build
+from `globe_vs_flat.py` (`p2j` + `jupyter nbconvert --to html --execute`) and
+are gitignored. To reproduce locally:
+
+```bash
+p2j -o -t globe_vs_flat.ipynb globe_vs_flat.py
+jupyter nbconvert --to html --execute globe_vs_flat.ipynb
+```
 
 ## Gotchas
 
@@ -44,8 +61,10 @@ nix run
 - Python is 3.12: `numpy==1.26.4` (pinned in `uv.lock`) only ships wheels up
   to cp312, so on 3.13 the wheel is missing and the sdist build fails
   (numpy 1.26.4 does not support 3.13 at all).
-- `package.nix` `projectName = "ex-reqs-shell"` must match
-  `pyproject.toml` `[project] name`, which `update-lock.sh` hardcodes.
+- `package.nix` `projectName = "flat_globe"` must match `pyproject.toml`
+  `[project] name`, which `update-lock.sh` hardcodes.
+- The namespaced venv lives at `bin/flat_globe-env/` (not `bin/flat_globe/`)
+  so it can't collide with the `flat_globe` launcher.
 - `myCustomOverrides.nix` is the hook for forcing nixpkgs-built packages
   (torch, pyside6, shiboken6, ...) on top of the uv.lock overlay.
 
