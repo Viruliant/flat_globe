@@ -9,7 +9,7 @@
       systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       perSystem = { system, pkgs, ... }:
         let
-          pkg = pkgs.callPackage ./nix/package.nix { };
+          pkg = pkgs.callPackage ./package.nix { };
         in {
           packages.default = pkg;
           # inputsFrom pulls pkg's nativeBuildInputs (= the uv.lock venv) into

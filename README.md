@@ -36,17 +36,6 @@ nix run
   `environment.systemPackages = [ pkg ]` exposes it at
   `/run/current-system/sw/bin/ex-reqs-shell/python3`.
 
-
- (requires `uv` on PATH; **deletes and rewrites**
-  those three files, so hand-edits to them are lost - 
-
-## Trying both bin layouts
-
-`nix run` works on both branches (each sets `meta.mainProgram`):
-
-    git checkout master && nix run
-    # option A (master): venv at bin/ex-reqs-shell/, wrapper is bin/numtest
-
 ## Gotchas
 
 - `package.nix` pins the pyproject-nix / uv2nix / build-system-pkgs git revs:

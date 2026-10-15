@@ -53,10 +53,10 @@ let
   python = pkgs.python312;
 
   # Load workspace Reads:
-  #   pyproject.toml
-  #   uv.lock
+  #   nix/pyproject.toml
+  #   nix/uv.lock
   workspace = uv2nix.lib.workspace.loadWorkspace {
-    workspaceRoot = ./.;
+    workspaceRoot = ./nix;
   };
 
   # Convert uv.lock into an overlay
@@ -68,7 +68,7 @@ let
   };
 
   myCustomOverrides =
-    import ./myCustomOverrides.nix {
+    import ./nix/myCustomOverrides.nix {
       inherit pkgs python;
     };
 
@@ -110,14 +110,10 @@ pkgs.stdenv.mkDerivation {
 #   pname = "numtest";
   pname = projectName;
   version = "0.1.0";
-
-  # Repo root (numtest.py lives there); `./..` from nix/ is the flake root.
-  src = ./..;
-
+  src = ./.;
   nativeBuildInputs = [
     appPythonEnv
   ];
-
   # bin/${projectName}/ = the full locked venv, namespaced (python3,
   # python, jupyter, ipython, ...); nothing shadows the system python3.
   # bin/numtest = wrapper that runs numtest.py.
@@ -139,13 +135,3 @@ pkgs.stdenv.mkDerivation {
     mainProgram = "numtest";
   };
 }
-####################################################################
-# Option: Return the virtual environment directly.
-# If all you really want is a Python environment generated from
-# pyproject.toml + uv.lock, this may be all that's needed.
-# this should happen if we do nix develop
-####################################################################
-# Option: Wrap the environment in a package so nix build / nix run have
-# something concrete to produce.
-# this should happen if we build
-####################################################################
