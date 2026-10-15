@@ -10,26 +10,33 @@ in your default browser.
 
 ## Commands
 
-```bash
-# checkout with
-git clone 
+`nix run github:Viruliant/flat_globe` will "just work"
 
+but if you run the following commands it will "just work" faster
+because `Lock2LocalPkgs.sh` will set the flake.lock to your
+system packages, and cause less downloading and building.
+
+```bash
+# checkout and run with
+git clone https://github.com/Viruliant/flat_globe.git ~/flat_globe
+cd ~/flat_globe
 # requirements.bak.txt (repo root) is the only editable source
 # regenerates nix/requirements.txt, nix/pyproject.toml, nix/uv.lock from it
 ./nix/update-lock.sh
 # sets flake.lock to match system nixpkgs
 ./nix/Lock2LocalPkgs.sh
-
-# build with (generates the HTML report at install time)
-nix build
-# needs network on first run (fetches pinned git deps + PyPI wheels)
-
-# enter development environment with
-nix develop
-./result/bin/flat_globe-env/python3 ./numtest.py
-
 # run with # opens the report in the default browser (via `meta.mainProgram`)
 nix run
+```
+
+you can also use this as a playground
+
+```bash
+# needs network on first run (fetches pinned git deps + PyPI wheels)
+nix build && nix develop
+# builds and enters development environment matching whatever you have set in requirements.bak.txt
+# do an exmaple run on
+./result/bin/flat_globe-env/python3 ./numtest.py
 ```
 
 - `nix build` - build; needs network on first run (fetches pinned git deps + PyPI wheels)
